@@ -8,10 +8,12 @@ on:
       - 'index.html'
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Set AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
@@ -19,5 +21,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
-      - name: Copy website to S3
-        run: aws s3 sync . s3://inventoryapp.rrc.ca --exclude "*" --include "index.html"
+
+      - name: Upload index.html to S3
+        run: |
+          aws s3 cp index.html s3://inventoryapp.rrc.ca/index.html \
+            --content-type text/html \
+            --acl public-read
+
